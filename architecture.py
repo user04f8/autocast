@@ -1,7 +1,10 @@
 import torch
 import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer
-from tokenizer import preprocess_and_encode
+#from tokenizer import preprocess_and_encode
+
+def preprocess_and_encode(_):
+    return _
 
 input_sentence = 'Hello world'
 
@@ -17,15 +20,16 @@ class TransformerBinaryClassifier(nn.Module):
         logits = self.output(pooled_output)
         return nn.functional.softmax(logits, dim=1)
 
-# Example usage
-model_name = "distilbert-base-uncased"  # Use any other model you prefer
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = TransformerBinaryClassifier(model_name)
+if __name__ == '__main__':
+    # Example usage
+    model_name = "distilbert-base-uncased"  # Use any other model you prefer
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = TransformerBinaryClassifier(model_name)
 
-# Use the input_sentence from the previous example
-inputs = tokenizer(preprocess_and_encode(input_sentence), return_tensors="pt")
-input_ids, attention_mask = inputs["input_ids"], inputs["attention_mask"]
+    # Use the input_sentence from the previous example
+    inputs = tokenizer(preprocess_and_encode(input_sentence), return_tensors="pt")
+    input_ids, attention_mask = inputs["input_ids"], inputs["attention_mask"]
 
-# Get the prediction
-prediction = model(input_ids, attention_mask)
-print(prediction)
+    # Get the prediction
+    prediction = model(input_ids, attention_mask)
+    print(prediction)

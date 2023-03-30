@@ -6,8 +6,10 @@ from gensim.models import KeyedVectors
 nltk.download('punkt')
 
 # Load pre-trained Word2Vec embeddings
-# Replace 'path/to/word2vec/model' with the actual path to the pre-trained Word2Vec model file
-word2vec_model = KeyedVectors.load_word2vec_format('path/to/word2vec/model', binary=True)
+# Replace with the actual path to the pre-trained Word2Vec model file
+print('word2vec_model: getting from *.vec')
+word2vec_model = KeyedVectors.load_word2vec_format('C:/Users/nbclark/Downloads/wiki.en.vec', binary=False)
+print('word2vec_model set')
 
 def preprocess_and_encode(sentence):
     # Tokenize the input sentence

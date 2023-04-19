@@ -1,7 +1,11 @@
 import pickle
 from gensim.models import KeyedVectors
 
-word2vec_model = KeyedVectors.load_word2vec_format('C:/Users/nbclark/Downloads/wiki.en.vec', binary=False)
-
-with open('word2vec_model', 'w') as f:
+with open('word2vec_model', 'wb') as f: # 'wb' == binary mode
+    word2vec_model = KeyedVectors.load_word2vec_format('C:/Users/nbclark/Downloads/wiki.en.vec', binary=False)
+  
     pickle.dump(word2vec_model, f)
+
+
+
+

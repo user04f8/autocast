@@ -49,16 +49,8 @@ def preprocess_and_encode(sentence):
     
     return np.array(encoded_tokens)
 
-if __name__ == '__main__':
-    show_numerical_like()
     
-    
-    # Example usage
-    # input_sentence = "Will there be an initial public offering on either the Shanghai Stock Exchange or the Shenzhen Stock Exchange before 1 January 2016?"
-    # encoded_sentence = preprocess_and_encode(input_sentence)
-    # print(encoded_sentence)
-    
-def show_numerical_like():
+def show_numerical_features():
     input_sentence = "zero one two three four five six seven eight nine ten eleven twelve thirteen"
     ns = [x for x in range(14)]
     encoded_sentence = preprocess_and_encode(input_sentence)
@@ -70,8 +62,19 @@ def show_numerical_like():
     print(r)
     print(argsort_r)
     print('numerical-like word features')
-    print('-')
-    print(encoded_sentence[:, argsort_r[0]])
     print('+')
-    print(encoded_sentence[:, argsort_r[-1]])
+    for i in range(5):
+        print(encoded_sentence[:, argsort_r[i]])
+    for i in range(-1, -5, -1):
+        print('-')
+        print(encoded_sentence[:, argsort_r[-i]])
     
+
+if __name__ == '__main__':
+    show_numerical_features()
+    
+    
+    # Example usage
+    # input_sentence = "Will there be an initial public offering on either the Shanghai Stock Exchange or the Shenzhen Stock Exchange before 1 January 2016?"
+    # encoded_sentence = preprocess_and_encode(input_sentence)
+    # print(encoded_sentence)

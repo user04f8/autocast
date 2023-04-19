@@ -51,11 +51,13 @@ def preprocess_and_encode(sentence):
 
     
 def show_numerical_features():
-    input_sentence = "zero one two three four five six seven eight nine ten eleven twelve thirteen"
-    ns = [x for x in range(14)]
+    #input_sentence = "zero one two three four five six seven eight nine ten eleven twelve thirteen"
+    input_sentence = "one ten hundred thousand million billion"
+    n_words = len(input_sentence.split(' '))
+    ns = [x for x in range(n_words)]
     encoded_sentence = preprocess_and_encode(input_sentence)
     print(encoded_sentence)
-    #word_avg = np.sum(encoded_sentence, axis=0) / 14
+    #word_avg = np.sum(encoded_sentence, axis=0) / n_words
     #print(word_avg)
     r = [np.corrcoef(ns, word_feature)[0,1] for word_feature in encoded_sentence.T]
     argsort_r = np.argsort(r)
@@ -64,9 +66,11 @@ def show_numerical_features():
     print('numerical-like word features')
     print('+')
     for i in range(5):
+        print(argsort_r[i])
         print(encoded_sentence[:, argsort_r[i]])
+    print('-')
     for i in range(-1, -5, -1):
-        print('-')
+        print(argsort_r[i])
         print(encoded_sentence[:, argsort_r[-i]])
     
 

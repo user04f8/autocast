@@ -1,14 +1,18 @@
 import nltk
 import numpy as np
+import pickle
 from gensim.models import KeyedVectors
+
+WORD2VEC_MODEL_FNAME = 'word2vec_model'
 
 # Download the NLTK tokenizer data
 nltk.download('punkt')
 
 # Load pre-trained Word2Vec embeddings
 # Replace with the actual path to the pre-trained Word2Vec model file
-print('word2vec_model: getting from *.vec')
-word2vec_model = KeyedVectors.load_word2vec_format('C:/Users/nbclark/Downloads/wiki.en.vec', binary=False)
+print('word2vec_model: getting from pickle')
+word2vec_model = pickle.load(open(WORD2VEC_MODEL_FNAME, 'rb'))
+# word2vec_model = KeyedVectors.load_word2vec_format('C:/Users/nbclark/Downloads/wiki.en.vec', binary=False)
 print('word2vec_model set')
 
 def preprocess_and_encode(sentence):

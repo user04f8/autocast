@@ -2,8 +2,10 @@ import nltk
 import numpy as np
 import pickle
 from gensim.models import KeyedVectors
+from scipy.stats import pearsonr
+from math import exp
 
-WORD2VEC_MODEL_FNAME = 'word2vec_model'
+from word2vec_model_loader import WORD2VEC_MODEL_FNAME
 
 # Download the NLTK tokenizer data
 nltk.download('punkt')
@@ -51,27 +53,52 @@ def preprocess_and_encode(sentence):
 
     
 def show_numerical_features():
-    #input_sentence = "zero one two three four five six seven eight nine ten eleven twelve thirteen"
-    input_sentence = "one ten hundred thousand million billion"
+    input_sentence = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen"
+    #input_sentence = "one ten hundred thousand million billion"
+    #input_sentence = "zero one one two three four five seven nine twelve fifteen twenty" # roughly log
     n_words = len(input_sentence.split(' '))
     ns = [x for x in range(n_words)]
     encoded_sentence = preprocess_and_encode(input_sentence)
     print(encoded_sentence)
-    #word_avg = np.sum(encoded_sentence, axis=0) / n_words
-    #print(word_avg)
-    r = [np.corrcoef(ns, word_feature)[0,1] for word_feature in encoded_sentence.T]
+    n_features = len(encoded_sentence[0])
+    word_avg = np.sum(encoded_sentence, axis=0) / n_words
+    encoded_sentence = np.array ( [encoded_word - word_avg for encoded_word in encoded_sentence] )
+    
+    #r = [np.corrcoef(ns, word_feature)[0,1] for word_feature in encoded_sentence.T]
+    r = [pearsonr(ns, word_feature)[1] for word_feature in encoded_sentence.T]# if abs(pearsonr(ns, word_feature)[0]) > 0.1]
     argsort_r = np.argsort(r)
-    print(r)
-    print(argsort_r)
+    #print(r)
+    #print(argsort_r)
+    numerical_feature_avg = np.zeros(n_words)
+    weighting_factors = np.zeros(n_features)
+    weighting_bonus = 1
     print('numerical-like word features')
     print('+')
-    for i in range(5):
-        print(argsort_r[i])
-        print(encoded_sentence[:, argsort_r[i]])
-    print('-')
-    for i in range(-1, -5, -1):
-        print(argsort_r[i])
-        print(encoded_sentence[:, argsort_r[-i]])
+    for i in range(n_features):
+        j = argsort_r[i]
+        encoded_feature = encoded_sentence.T[j]
+        r = pearsonr(ns, encoded_feature)[0]
+        p = pearsonr(ns, encoded_feature)[1]
+        if p > 0.05:
+            break
+        weighting_bonus -= 0.0001
+        if weighting_bonus < 0:
+            break
+        weighting_factor = (r * weighting_bonus * (1-(20*p)))
+        weighting_factors[j] = weighting_factor
+        numerical_feature_avg += weighting_factor * encoded_feature
+        print(f'{j} r {r:.4f} p {pearsonr(ns, encoded_feature)[1]:.4f}')
+        print(encoded_feature)
+        i += 1
+
+    print('avg numerical feature (weighted sum)')
+    print(numerical_feature_avg)
+    print('weight vector for numerical largeness:')
+    print(weighting_factors)
+    #print('-')
+    #for i in range(-1, -5, -1):
+    #    print(argsort_r[i])
+    #    print(encoded_sentence[:, argsort_r[-i]])
     
 
 if __name__ == '__main__':

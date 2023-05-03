@@ -1,6 +1,8 @@
 import json
-import requests
+#import requests
 from os.path import exists
+
+import openai
 
 SECRETS = 'secrets.json'
 
@@ -12,6 +14,12 @@ else:
     If you\'re trying to run this, you need to get an OpenAI API token
     and put it in a json file called {SECRETS} with the field \'api_key\'''')
 
+openai.Completion.create(
+    model=FINE_TUNED_MODEL,
+    prompt=YOUR_PROMPT)
+
+
+"""
 url = "https://api.openai.com/v1/completions"
 
 headers = {
@@ -27,3 +35,4 @@ data = {
 
 response = requests.post(url, headers=headers, data=json.dumps(data))
 print(response.json())
+"""

@@ -1,27 +1,44 @@
 import json
 #import requests
 from os.path import exists
+import json
 
 import openai
 
-from gpt_utils import *
+import gpt_utils
 
 SECRETS = 'secrets.json'
+FINETUNED_MODEL = 'curie:ft-personal-2023-05-03-09-26-57'
+# generate a new model with:
+# openai api fine_tunes.create -t data\gpt_finetune\data_train.json -m curie
 
 if exists(SECRETS):
     with open(SECRETS) as f:
-        api_key = json.load(f)['api_key']
+        openai.api_key = json.load(f)['api_key']
 else:
     raise FileNotFoundError(f'''No file {SECRETS} found
     If you\'re trying to run this, you need to get an OpenAI API token
     and put it in a json file called {SECRETS} with the field \'api_key\'''')
 
-test_prompt = "Context: China suspended initial public offerings (IPOs) in early July (http://www. bloomberg. com/news/articles/2015-07-04/china-stock-brokers-set-up-19-billion-fund-to-stem-market-rout , http://www. reuters. com/article/2015/07/05/us-china-markets-brokerage-pledge-idUSKCN0PE08E20150705 , http://www. wsj. com/articles/china-setting-up-fund-to-stabilize-stock-market-1435991611 ). \\nQuestion: Will there be an initial public offering on either the Shanghai Stock Exchange or the Shenzhen Stock Exchange before 1 January 2016?\\nChoices: yes\\nno\\n###\\n"
+with open('data/gpt_finetune/data_test.json') as f:
+    test_data = json.load(f)
+with open('data/gpt_finetune/data_train.json') as f:
+    #train_data = json.load(f)
+    train_data_lines = f.readlines()
+
+test_datum = json.loads(train_data_lines[3477])
+print(test_datum)
+test_prompt = test_datum['prompt']
 
 response = openai.Completion.create(
-    model='ft-jUzTYEt84vpetUOIrgZCUjpp',
-    prompt=test_prompt)
+    model=FINETUNED_MODEL,
+    prompt=test_prompt,
+    max_tokens=8,
+    stop=gpt_utils.stop_sequence_token)
 
+print(response)
+
+print(response['choices'][0]['text'])
 
 """
 url = "https://api.openai.com/v1/completions"

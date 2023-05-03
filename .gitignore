@@ -128,8 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# word2vec_model
+# large models
 word2vec_model
+*_model
+*_tokenizer
 
 # secrets (for security)
 secrets.json

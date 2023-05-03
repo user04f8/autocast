@@ -26,34 +26,20 @@ with open('data/gpt_finetune/data_train.json') as f:
     #train_data = json.load(f)
     train_data_lines = f.readlines()
 
-test_datum = json.loads(train_data_lines[3477])
-print(test_datum)
-test_prompt = test_datum['prompt']
+def run_all():
+    pass #TODO
 
-response = openai.Completion.create(
-    model=FINETUNED_MODEL,
-    prompt=test_prompt,
-    max_tokens=8,
-    stop=gpt_utils.stop_sequence_token)
+def test():
+    test_datum = json.loads(train_data_lines[3477])
+    print(test_datum)
+    test_prompt = test_datum['prompt']
 
-print(response)
+    response = openai.Completion.create(
+        model=FINETUNED_MODEL,
+        prompt=test_prompt,
+        max_tokens=8,
+        stop=gpt_utils.stop_sequence_token)
 
-print(response['choices'][0]['text'])
+    print(response)
 
-"""
-url = "https://api.openai.com/v1/completions"
-
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {api_key}"
-}
-
-data = {
-    "model": "text-davinci-002",
-    "prompt": "Correct this to standard English : Who are you \n",
-    "max_tokens": 60        
-}
-
-response = requests.post(url, headers=headers, data=json.dumps(data))
-print(response.json())
-"""
+    print(response['choices'][0]['text'])

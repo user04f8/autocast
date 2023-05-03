@@ -4,6 +4,8 @@ from os.path import exists
 
 import openai
 
+from gpt_utils import *
+
 SECRETS = 'secrets.json'
 
 if exists(SECRETS):
@@ -14,9 +16,11 @@ else:
     If you\'re trying to run this, you need to get an OpenAI API token
     and put it in a json file called {SECRETS} with the field \'api_key\'''')
 
-openai.Completion.create(
-    model=FINE_TUNED_MODEL,
-    prompt=YOUR_PROMPT)
+test_prompt = "Context: China suspended initial public offerings (IPOs) in early July (http://www. bloomberg. com/news/articles/2015-07-04/china-stock-brokers-set-up-19-billion-fund-to-stem-market-rout , http://www. reuters. com/article/2015/07/05/us-china-markets-brokerage-pledge-idUSKCN0PE08E20150705 , http://www. wsj. com/articles/china-setting-up-fund-to-stabilize-stock-market-1435991611 ). \\nQuestion: Will there be an initial public offering on either the Shanghai Stock Exchange or the Shenzhen Stock Exchange before 1 January 2016?\\nChoices: yes\\nno\\n###\\n"
+
+response = openai.Completion.create(
+    model='ft-jUzTYEt84vpetUOIrgZCUjpp',
+    prompt=test_prompt)
 
 
 """

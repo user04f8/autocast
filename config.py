@@ -1,0 +1,1 @@
+news_relevance_k = 2

@@ -1,7 +1,10 @@
 import spacy
 import gensim.downloader as api
 from sklearn.metrics.pairwise import cosine_similarity
-from tokenizer import word2vec_model
+
+from tokenizer import word2vec_model, preprocess_and_encode
+from config import news_relevance_k as K
+
 
 def tokenize_article(article):
     nlp = spacy.load("en_core_web_sm")
@@ -11,8 +14,7 @@ def tokenize_article(article):
     return sentences, entities
 
 def average_sentence_vector(sentence):
-    words = sentence.split()
-    word_vectors = [word2vec_model[word] for word in words if word in word2vec_model.vocab]
+    word_vectors = preprocess_and_encode(sentence)
     if len(word_vectors) == 0:
         return None
     avg_vector = sum(word_vectors) / len(word_vectors)
@@ -21,19 +23,23 @@ def average_sentence_vector(sentence):
 def find_relevant_sentences(sentences, entities, question):
     relevant_sentences = []
     question_vector = average_sentence_vector(question)
+    print(question_vector)
 
     if question_vector is not None:
         sentence_similarities = []
 
         for sentence in sentences:
             sentence_vector = average_sentence_vector(sentence)
+            print(sentence, sentence_vector)
             if sentence_vector is not None:
                 similarity = cosine_similarity(question_vector, sentence_vector)
                 sentence_similarities.append((sentence, similarity[0][0]))
 
         sentence_similarities.sort(key=lambda x: x[1], reverse=True)
+        print(sentence_similarities)
 
-        for i in range(min(3, len(sentence_similarities))):
+        for i in range(K):
+            # gets only the K most 'relevant' sentences to the question
             relevant_sentences.append(sentence_similarities[i][0])
 
     return relevant_sentences

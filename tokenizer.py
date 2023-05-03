@@ -7,7 +7,7 @@ from math import exp
 
 from word2vec_model_loader import WORD2VEC_MODEL_FNAME
 
-#nltk.download('punkt')
+nltk.download('punkt')
 
 # Load pre-trained Word2Vec embeddings
 print('word2vec_model: getting from pickle')
@@ -23,6 +23,8 @@ N = len(word2vec_model)
 def preprocess_and_encode(sentence):
     # Tokenize the input sentence
     tokens = nltk.word_tokenize(sentence.lower())
+
+    return [word2vec_model[token] for token in tokens if token in word2vec_model]
     
     # Encode each token using the Word2Vec model
     encoded_tokens = []

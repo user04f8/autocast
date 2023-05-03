@@ -1,50 +1,90 @@
 from typing import Tuple
-from datetime import datetime
+from datetime import datetime, timedelta
 from ast import literal_eval
 
+SEPARATOR = '\\n###\\n'
+STOP_SEQUENCE = ' ###'
 
-num_choice_tokens = ('A', 'B', 'C', 'D', 'E', 'F', 'G')
-num_split_len = len(num_choice_tokens)
+#multi_choice_tokens ('A' ...)
+num_choice_tokens = tuple(chr(n) for n in range(65, 65 + 11))
+num_split_len = len(num_choice_tokens) - 1
 
-def get_prompt_numeric(question : str, background : str, choices : str) -> Tuple[str, str]:
+def clean(s : str):
+    return s.replace('”', '"').replace('“', '"').replace('"', '\\\"')
+
+def get_prompt_numeric(question : str, background : str, choices : str, answer : str) -> Tuple[str, str]:
     """
     Returns a tuple with a prompt and ideal response for GPT finetuning, specific to numeric questions
     """
-
+    answer = float(answer) # from 0. to 1. (log scaled)
     choices = literal_eval(choices)
     if isinstance(choices['max'], str):
         max_date = datetime.strptime(choices['max'], '%Y-%m-%d')
-        min_date = datetime.strptime(choices['min'], '%Y-%m-%d')
+        low = min_date = datetime.strptime(choices['min'], '%Y-%m-%d')
         range = (max_date - min_date).days
-        low = 0
-        choices_text = '\n'.join(f'{token}: {min_date + ((i/num_split_len) * range)}' for i, token in enumerate(num_choice_tokens))
+        choices_text = '\\n'.join(f'{token}: {min_date + timedelta(days=((i/num_split_len) * range))}' for i, token in enumerate(num_choice_tokens))
+        #completion_raw : datetime = min_date + timedelta(days=(range ** answer))
+        #completion = completion_raw.strftime('%Y-%m-%d')
     else:
         range = choices['max'] - choices['min']
         low = choices['min']
-        choices_text = '\n'.join(f'{token}: {low + ((i/num_split_len) * range)}' for i, token in enumerate(num_choice_tokens))
+        choices_text = '\\n'.join(f'{token}: {low + (((i/num_split_len)) * range)}' for i, token in enumerate(num_choice_tokens))
+    #choices['deriv_ratio']
+    if answer == 2.0:
+        # WHY? out of range annoying data points; there's only two outliers though so we'll just treat them as == 1.0
+        answer = 1.0
+    else:
+        assert 0. <= answer <= 1., f'{answer}'
+    n = int(answer * num_split_len)
     
-    prompt = f'Context: {background}\nQuestion: {question}\nWhich choice is closest?\n{choices_text}'
-
-    return prompt
-
-
-def get_prompt(question : str, background : str, choice_type : str, choices : str) -> str:
+    if n > num_split_len:
+        print(n, question, choices, range, answer)
+    try:
+        completion = f'{num_choice_tokens[n]} or exactly {answer:.4f}{STOP_SEQUENCE}'
+    except:
+        
+        print(n, question, choices, range, answer)
+        return None
+    
+    prompt = f'Context: {background}\\nQuestion: {question}\\nWhich choice is closest?\\n{choices_text}{SEPARATOR}'
     
 
+    return prompt, completion
 
+
+def get_prompt_t_f(question : str, background : str, choices : str, answer : str) -> Tuple[str, str]:
+    """
+    Returns a tuple with a prompt and ideal response for GPT finetuning
+    """
     try:
         choices = literal_eval(choices)
-        assert 2 <= len(choices)
-        choices_text = "\n".join(choices)
-        
+        choices_text = "\\n".join(choices)
 
-        prompt = f'Context: {background}\nQuestion: {question}\nChoices: {choices_text}'
+        prompt = f'Context: {background}\\nQuestion: {question}\\nChoices: {choices_text}{SEPARATOR}'
 
-        return prompt
+        return prompt, answer + STOP_SEQUENCE
 
     except Exception as e:
         print(f'warn on prompt {question} {background} {choices}')
         print(e)
         
+        return None
+    
+def get_prompt_multi(question : str, background : str, choices : str, answer : str) -> Tuple[str, str]:
+    """
+    Returns a tuple with a prompt and ideal response for GPT finetuning
+    """
+    try:
+        choices = literal_eval(choices)
+        choices_text = "\\n".join(choices) # could do A: ..., B: ..., etc.
+        completion = choices[ord(answer) - 65] + STOP_SEQUENCE
+
+        prompt = f'Context: {background}\\nQuestion: {question}\\nChoices:\\n{choices_text}{SEPARATOR}'
+
+        return prompt, completion
+
+    except Exception as e:
+        print(f'warn on prompt {question} {background} {choices}')
+        print(e)
 
         return None

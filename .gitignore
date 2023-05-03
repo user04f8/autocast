@@ -130,3 +130,6 @@ dmypy.json
 
 # word2vec_model
 word2vec_model
+
+# secrets (for security)
+secrets.json

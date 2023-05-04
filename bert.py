@@ -35,12 +35,10 @@ def find_nearest_category(response, categories, model=model, tokenizer=tokenizer
 if __name__ == "__main__":
     # sample usage
 
-    response = "cat"
+    response = "The text describes a kitty."
     categories = [
-        "The text describes a dog.",
         "The text describes a cat.",
-        "The text describes a goat.",
-        "The text describes a horse."
+        "The text describes a goat."
     ]
 
     nearest_category = find_nearest_category(response, categories, model, tokenizer)

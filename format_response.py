@@ -38,6 +38,13 @@ def reformat_response(response : str, choices : str, qtype : str):
         
         return (1-w) * coarse_num + w * exact_num
     else:
-        choices = literal_eval(choices)
-        if response.lower in choices ...
-        return np.array()
+        choices = literal_eval(choices.lower())
+        if response.lower() in choices:
+            p = np.zeros(len(choices))
+            p[choices.index(response.lower())] = 1.
+            return p
+        else:
+            print('Debug:', f'response {response} not in {choices}')
+            # TODO
+            return np.ones(len(choices)) / len(choices)
+

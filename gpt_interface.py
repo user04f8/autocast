@@ -1,4 +1,3 @@
-import json
 #import requests
 from os.path import exists
 import json
@@ -27,7 +26,28 @@ with open('data/gpt_finetune/data_train.json') as f:
     train_data_lines = f.readlines()
 
 def run_all():
-    pass #TODO
+    """
+    Execute the completions on each token
+    to cache the results in completions.json
+    (so that we minimize API calls to openai)
+    """
+    completions = []
+    with open('data/gpt_finetune/completions.txt', 'w') as f:
+        for test_prompt in test_data['prompt_list']:
+            
+            response = openai.Completion.create(
+                model=FINETUNED_MODEL,
+                prompt=test_prompt,
+                max_tokens=32,
+                stop=gpt_utils.stop_sequence_token)
+            completion_text = response['choices'][0]['text']
+            completions.append(completion_text.strip())
+            f.write(completion_text.strip() + '\n')
+            print(completion_text)
+
+
+    with open('data/gpt_finetune/completions.json', 'w') as f:
+        json.dump(completions, f)
 
 def test():
     test_datum = json.loads(train_data_lines[3477])
@@ -43,3 +63,6 @@ def test():
     print(response)
 
     print(response['choices'][0]['text'])
+
+if __name__ == '__main__':
+    run_all()

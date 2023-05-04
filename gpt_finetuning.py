@@ -2,9 +2,7 @@ import pandas as pd
 import json
 
 from gpt_utils import *
-
-SOURCE_DIR = 'data/source/'
-FINETUNED_DIR = 'data/gpt_finetune/'
+from config import SOURCE_DIR, FINETUNED_DIR
 
 for train in (True, False):
     if train:

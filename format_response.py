@@ -3,6 +3,7 @@ from ast import literal_eval
 
 from config import numeric_exact_weighting, numeric_exact_weighting_dist_penalty
 from gpt_utils import inv_numeric, num_choice_tokens
+from bert import find_nearest_category_index
 
 # format for t/f:
     # [#, #]
@@ -45,6 +46,8 @@ def reformat_response(response : str, choices : str, qtype : str):
             return p
         else:
             print('Debug:', f'response {response} not in {choices}')
-            # TODO
-            return np.ones(len(choices)) / len(choices)
+            idx = find_nearest_category_index(response, choices)
+            p = np.zeros(len(choices))
+            p[idx] = 1.
+            return p
 

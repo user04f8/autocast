@@ -32,6 +32,14 @@ def find_nearest_category(response, categories, model=model, tokenizer=tokenizer
 
     return categories[max_index]
 
+def find_nearest_category_index(response, categories, model=model, tokenizer=tokenizer):
+    response_vector = encode_text(response, model, tokenizer)
+    category_vectors = [encode_text(cat, model, tokenizer) for cat in categories]
+
+    similarities = [cosine_similarity(response_vector, cat_vector) for cat_vector in category_vectors]
+    return similarities.index(max(similarities))
+
+
 if __name__ == "__main__":
     # sample usage
 

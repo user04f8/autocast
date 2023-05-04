@@ -33,18 +33,17 @@ def run_all():
     """
     completions = []
     with open('data/gpt_finetune/completions.txt', 'w') as f:
-        for test_prompt in test_data['prompt_list']:
-            
+        for test_q_prompt in test_data['prompt_list']:
+            test_q, test_prompt = test_q_prompt
             response = openai.Completion.create(
                 model=FINETUNED_MODEL,
                 prompt=test_prompt,
                 max_tokens=32,
                 stop=gpt_utils.stop_sequence_token)
             completion_text = response['choices'][0]['text']
-            completions.append(completion_text.strip())
+            completions.append({'question': test_q, 'completion': completion_text.strip()})
             f.write(completion_text.strip() + '\n')
             print(completion_text)
-
 
     with open('data/gpt_finetune/completions.json', 'w') as f:
         json.dump(completions, f)

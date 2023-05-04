@@ -1,9 +1,10 @@
 import numpy as np
 from ast import literal_eval
+import json
 
-from config import numeric_exact_weighting, numeric_exact_weighting_dist_penalty
+from config import numeric_exact_weighting, numeric_exact_weighting_dist_penalty, DEBUG
 from gpt_utils import inv_numeric, num_choice_tokens
-from bert import find_nearest_category_index
+from bert import find_nearest_category, find_nearest_category_index
 
 # format for t/f:
     # [#, #]
@@ -13,7 +14,7 @@ from bert import find_nearest_category_index
     # #
     # (all #s are from 0. to 1.)
 
-def reformat_response(response : str, choices : str, qtype : str):
+def format_response(response : str, choices : str, qtype : str):
     """
     Reformats a response from GPT into the appropriate one-hot encoding or number,
     as required by the submission skeleton code.
@@ -45,9 +46,10 @@ def reformat_response(response : str, choices : str, qtype : str):
             p[choices.index(response.lower())] = 1.
             return p
         else:
-            print('Debug:', f'response {response} not in {choices}')
+            if DEBUG:
+                print('Debug:', f'response {response} not in {choices}')
+                print(f'Defaulting to {find_nearest_category(response, choices)}')
             idx = find_nearest_category_index(response, choices)
             p = np.zeros(len(choices))
             p[idx] = 1.
             return p
-

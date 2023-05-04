@@ -10,6 +10,8 @@ STOP_SEQUENCE = ' ###'
 num_choice_tokens = tuple(chr(n) for n in range(65, 65 + 11))
 num_split_len = len(num_choice_tokens) - 1
 
+
+
 def clean(s : str):
     return s.replace('”', '"').replace('“', '"').replace('"', '\\\"')
 
@@ -96,3 +98,9 @@ def get_prompt_multi(question : str, background : str, choices : str, answer=Non
         print(e)
 
         return None
+    
+qtypes = {'t/f': get_prompt_t_f, 'mc': get_prompt_multi, 'num': get_prompt_numeric}
+
+def get_prompt(question : str, background : str, choices : str, qtype):
+    funct = qtypes[qtype]
+    return funct(question, background, choices)

@@ -24,8 +24,32 @@ with open('data/gpt_finetune/data_test.json') as f:
 with open('data/gpt_finetune/data_train.json') as f:
     #train_data = json.load(f)
     train_data_lines = f.readlines()
+with open('autocast_questions.json') as f:
+    submission_qs = json.load(f)
 
-def run_all():
+def run_submission():
+    completions = []
+    with open('data/gpt_finetune/submission_completions.txt', 'w') as f:
+        for submission_q in submission_qs:
+            q, prompt = submission_q['question'], gpt_utils.get_prompt(submission_q['question'], submission_q['background'], submission_q['choices'], submission_q['qtype'])
+            print(q)
+            print(prompt)
+            import time
+            time.sleep(10)
+            response = openai.Completion.create(
+                model=FINETUNED_MODEL,
+                prompt=prompt,
+                max_tokens=32,
+                stop=gpt_utils.stop_sequence_token)
+            completion_text = response['choices'][0]['text']
+            completions.append({'question': q, 'completion': completion_text.strip()})
+            f.write(completion_text.strip() + '\n')
+            print(completion_text)
+
+    with open('data/gpt_finetune/submission_completions.json', 'w') as f:
+        json.dump(completions, f)
+
+def run_all_test():
     """
     Execute the completions on each token
     to cache the results in completions.json
@@ -44,6 +68,7 @@ def run_all():
             completions.append({'question': test_q, 'completion': completion_text.strip()})
             f.write(completion_text.strip() + '\n')
             print(completion_text)
+
 
     with open('data/gpt_finetune/completions.json', 'w') as f:
         json.dump(completions, f)
@@ -64,4 +89,4 @@ def test():
     print(response['choices'][0]['text'])
 
 if __name__ == '__main__':
-    run_all()
+    run_submission()

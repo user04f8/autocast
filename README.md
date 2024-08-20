@@ -1,7 +1,5 @@
-# autocast
-For the autocast competition
-- https://forecasting.mlsafety.org/
-- https://codalab.lisn.upsaclay.fr/competitions/7417
+# Autocast
+This is my submission to the NeurIPS 2023 Autocast competition, achieving skillful forecasts of future events via finetuned GPTs. My submission was 2nd in accuracy before the competitions untimely termination "due to the collapse of the FTX Future Fund" (https://codalab.lisn.upsaclay.fr/competitions/7417).
 
-Google colab: https://colab.research.google.com/drive/1wP_CuWa7JhWIMcDdpQCvhd9EkY7wFINq
+Further competition details are availabe at: https://github.com/eawang02/autocast-competition
 
